@@ -353,6 +353,11 @@ address { font-style: normal; }
 .footer { padding-block: var(--space-6); border-top: 1px solid var(--line); color: var(--text-dim); }
 .footer__inner { display: grid; grid-template-columns: auto 1fr auto; gap: var(--space-5); align-items: end; font-size: var(--fs-small); }
 .footer img { height: 52px; width: auto; }
+.footer__end { display: grid; gap: 0.5rem; justify-items: end; }
+.credit { display: inline-flex; align-items: center; gap: 0.4em; font-size: 0.75rem; letter-spacing: 0.04em; opacity: 0.6; transition: opacity 0.3s; }
+.credit:hover { opacity: 1; }
+.credit a { display: inline-flex; }
+.footer .credit img { height: 1.5em; width: auto; mix-blend-mode: normal; }
 
 /* ---------- Animaciones de scroll (bidireccionales) ---------- */
 .js [data-reveal] {
@@ -419,6 +424,7 @@ address { font-style: normal; }
   .locate__map { min-height: 300px; }
   .form { grid-template-columns: 1fr; }
   .footer__inner { grid-template-columns: 1fr; gap: var(--space-3); }
+  .footer__end { justify-items: start; }
 }
 
 @media (prefers-reduced-motion: reduce) and (max-width: 760px) {
