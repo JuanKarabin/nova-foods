@@ -78,7 +78,6 @@
   const AUTO_REVEAL = [
     'main h2', 'main h3', 'main p', 'main li', 'main figure', 'main img',
     'main address', 'main article', 'main .tile', 'main .field', 'main iframe',
-    '.footer img', '.footer p',
   ].join(', ');
   const siblingCount = new Map();
   const autoTagged = [];
