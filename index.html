@@ -10,9 +10,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Lexend+Deca:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <script>document.documentElement.classList.add("js")</script>
+  <script>document.documentElement.classList.add("js");if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("is-intro")</script>
 </head>
 <body>
+  <div class="intro" aria-hidden="true">
+    <div class="intro__inner">
+      <img class="intro__logo" src="assets/NOVA principal blanco.png" alt="">
+      <span class="intro__line"></span>
+      <span class="intro__tag">Fábrica de marca blanca</span>
+    </div>
+  </div>
   <a class="skip" href="#contenido">Saltar al contenido</a>
   <div class="ambient" aria-hidden="true"></div>
 

@@ -109,7 +109,22 @@
         else if (entry.boundingClientRect.top > 0) entry.target.classList.remove('is-in');
       });
     }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
-    revealables.forEach((el) => io.observe(el));
+    const startReveal = () => revealables.forEach((el) => io.observe(el));
+    /* ---------- Entrada: logo + línea, telón que sube y recién ahí la página ---------- */
+    const intro = document.querySelector('.intro');
+    if (!intro || !root.classList.contains('is-intro')) {
+      intro?.remove();
+      startReveal();
+    } else {
+      const finish = () => {
+        root.classList.add('is-intro-out');
+        setTimeout(startReveal, 350);
+        setTimeout(() => { root.classList.remove('is-intro', 'is-intro-out'); intro.remove(); }, 1200);
+      };
+      const ready = new Promise((r) => (document.readyState === 'complete' ? r() : window.addEventListener('load', r, { once: true })));
+      const minTime = new Promise((r) => setTimeout(r, 2100));
+      Promise.race([Promise.all([ready, minTime]), new Promise((r) => setTimeout(r, 4500))]).then(finish);
+    }
   }
 
   /* ---------- Carrusel de logos: duplica la pista para un loop continuo ---------- */
