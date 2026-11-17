@@ -122,7 +122,15 @@
       };
       const ready = new Promise((r) => (document.readyState === 'complete' ? r() : window.addEventListener('load', r, { once: true })));
       const minTime = new Promise((r) => setTimeout(r, 2100));
-      Promise.race([Promise.all([ready, minTime]), new Promise((r) => setTimeout(r, 4500))]).then(finish);
+      // El telón espera a que el video del reel pueda reproducirse sin cortes
+      const reelVideo = document.querySelector('.reel__video');
+      const videoReady = new Promise((r) => {
+        if (!reelVideo || reelVideo.readyState >= 4) return r();
+        ['canplaythrough', 'error'].forEach((ev) => reelVideo.addEventListener(ev, r, { once: true }));
+        reelVideo.load();
+      });
+      // Tope de seguridad: con conexiones lentas no se queda colgado en el logo
+      Promise.race([Promise.all([ready, minTime, videoReady]), new Promise((r) => setTimeout(r, 9000))]).then(finish);
     }
   }
 
@@ -233,4 +241,31 @@
   }
 
   document.querySelectorAll('[data-year]').forEach((el) => { el.textContent = new Date().getFullYear(); });
+  /* ---------- Reel: el video crece, se queda y se achica con el scroll ---------- */
+  const reel = document.querySelector('[data-reel]');
+  if (reel) {
+    const video = reel.querySelector('video');
+    const ease = (t) => 1 - Math.pow(1 - t, 3);
+    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const r = reel.getBoundingClientRect();
+      const total = Math.max(1, r.height - window.innerHeight);
+      const p = clamp01(-r.top / total);
+      reel.style.setProperty('--grow', ease(clamp01(p / 0.35)).toFixed(4));
+      reel.style.setProperty('--out', ease(clamp01((p - 0.75) / 0.25)).toFixed(4));
+    };
+    const request = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+    if (!reduceMotion) {
+      update();
+      window.addEventListener('scroll', request, { passive: true });
+      window.addEventListener('resize', request);
+    }
+    // Reproduce solo cuando esta en pantalla (ahorra bateria y datos)
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { video.preload = 'auto'; video.play().catch(() => {}); }
+      else video.pause();
+    }, { threshold: 0.15 }).observe(reel.querySelector('.reel__sticky'));
+  }
 })();
