@@ -72,6 +72,9 @@ html {
   -webkit-text-size-adjust: 100%;
   color-scheme: dark;
   scrollbar-color: #3A3A3C var(--bg);
+  overflow-x: hidden;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
 }
 
 body {
@@ -82,7 +85,16 @@ body {
   font-weight: 300;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
   overflow-x: clip;
+  overscroll-behavior-x: none;
+  position: relative;
+  width: 100%;
+}
+
+/* Mobile: solo desplazamiento vertical (se mantiene el zoom con pellizco) */
+@media (hover: none) and (pointer: coarse) {
+  html, body { touch-action: pan-y pinch-zoom; }
 }
 
 img { display: block; max-width: 100%; height: auto; }
