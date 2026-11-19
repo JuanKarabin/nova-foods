@@ -239,7 +239,7 @@ address { font-style: normal; }
   padding: 10px; gap: var(--space-4);
 }
 .locate__map { position: relative; min-height: 420px; border-radius: var(--radius-sm); overflow: hidden; background: #1B1B1D; }
-.locate__map iframe { position: absolute; inset: 0; width: 100%; height: 100%; filter: grayscale(1) invert(0.9) contrast(0.9); transition: filter 0.6s var(--ease-out); }
+.locate__map iframe { position: absolute; inset: 0; width: 100%; height: 100%; filter: none; transition: filter 0.6s var(--ease-out); }
 .locate__map:hover iframe { filter: none; }
 .locate__info { padding: var(--space-4) var(--space-3) var(--space-3) 0; display: grid; gap: var(--space-2); align-content: start; color: var(--text-muted); }
 .locate__info address { color: #fff; }
@@ -249,12 +249,24 @@ address { font-style: normal; }
 /* Productos: foto + un panel de vidrio con las cuatro líneas */
 .catalog { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-3); align-items: stretch; }
 .catalog__media { position: relative; margin: 0; }
-.catalog__media img {
-  width: 100%; height: 100%; min-height: 420px; object-fit: cover;
+/* Galeria de sabores: slides que pasan solos, arrastrables con dedo o mouse */
+.gallery { min-height: 420px; display: grid; }
+.gallery__track {
+  display: flex; height: 100%; overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain;
   -webkit-mask: var(--plate-frame) center / 100% 100% no-repeat; mask: var(--plate-frame) center / 100% 100% no-repeat;
-  filter: saturate(0.6) brightness(0.8);
+  cursor: grab; outline: none;
 }
-.catalog__media .chip { position: absolute; left: 1.25rem; bottom: 2.5rem; }
+.gallery__track::-webkit-scrollbar { display: none; }
+.gallery__track.is-dragging { cursor: grabbing; scroll-snap-type: none; }
+.slide { position: relative; flex: 0 0 100%; margin: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+.slide img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+.slide__name { position: absolute; left: 1.25rem; bottom: 2.5rem; font-weight: 600; color: #fff;
+  opacity: 0; transform: translateY(10px); transition: opacity 0.5s, transform 0.5s var(--ease-out); }
+.slide.is-active .slide__name { opacity: 1; transform: none; }
+.gallery__dots { position: absolute; right: 1.5rem; bottom: 2.75rem; display: flex; gap: 0.4rem; }
+.gallery__dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 99px; background: rgb(255 255 255 / 0.45); cursor: pointer; transition: width 0.4s var(--ease-out), background 0.3s; }
+.gallery__dots button[aria-current="true"] { width: 22px; background: #fff; }
 .catalog__list {
   --mx: 50%; --my: 50%;
   position: relative; overflow: hidden;
@@ -304,6 +316,21 @@ address { font-style: normal; }
   font-size: 0.875rem; color: var(--text-muted); transition: border-color 0.3s, color 0.3s;
 }
 .flavors li:hover { border-color: var(--line-strong); color: #fff; }
+.flavors li { transition: border-color 0.3s, color 0.3s, background 0.3s, box-shadow 0.3s; }
+.flavors li.is-featured { border-color: var(--brand-blue-light); color: #fff; background: rgb(111 155 232 / 0.14); box-shadow: 0 0 0 1px var(--brand-blue-light) inset; }
+
+/* Boton de sonido del video */
+.reel__sound {
+  position: absolute; bottom: calc(var(--iy) + clamp(1.25rem, 4vh, 2.5rem)); right: calc(var(--ix) + var(--gutter)); z-index: 5;
+  width: 52px; height: 52px; display: grid; place-items: center; padding: 0; border-radius: 99px; cursor: pointer;
+  color: #0D0D0E; background: rgb(255 255 255 / 0.92); border: 0; box-shadow: 0 6px 20px rgb(0 0 0 / 0.45);
+  opacity: clamp(0, (var(--grow) - 0.3) * 2, 1); transition: transform 0.3s var(--ease-out), background 0.3s;
+}
+.reel__sound:hover { transform: scale(1.08); background: #fff; }
+.reel__sound svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.reel__sound .i-off, .reel__sound[aria-pressed="false"] .i-on { display: none; }
+.reel__sound[aria-pressed="false"] .i-off { display: block; }
+@media (prefers-reduced-motion: reduce) { .reel__sound { opacity: 1; bottom: 1rem; right: 1rem; } }
 
 /* Clientes */
 .clients { padding-block: var(--space-6); }
@@ -401,7 +428,7 @@ address { font-style: normal; }
   .chip--top { left: 0; }
   .features { grid-template-columns: 1fr; }
   .locate, .catalog { grid-template-columns: 1fr; }
-  .catalog__media img { min-height: 300px; max-height: 420px; }
+  .gallery { min-height: 320px; height: 380px; }
   .locate__info { padding: var(--space-2); }
   .steps { grid-template-columns: repeat(2, 1fr); row-gap: var(--space-5); }
 }

@@ -263,9 +263,117 @@
       window.addEventListener('resize', request);
     }
     // Reproduce solo cuando esta en pantalla (ahorra bateria y datos)
+    // Sonido: arranca al 75%. Si el navegador bloquea el audio sin interaccion,
+    // reproduce mudo y lo activa en el primer toque/click/tecla del usuario.
+    const soundBtn = reel.querySelector('[data-sound]');
+    let wantSound = true;
+    video.volume = 0.75;
+    const syncBtn = () => {
+      const on = wantSound && !video.muted;
+      soundBtn.setAttribute('aria-pressed', String(on));
+      soundBtn.setAttribute('aria-label', on ? 'Desactivar sonido' : 'Activar sonido');
+    };
+    const playVideo = () => {
+      video.muted = !wantSound;
+      video.play().catch(() => { video.muted = true; return video.play().catch(() => {}); }).finally(syncBtn);
+    };
+    const unlockEvents = ['pointerdown', 'keydown', 'touchend'];
+    const unlock = () => {
+      unlockEvents.forEach((ev) => window.removeEventListener(ev, unlock, true));
+      if (wantSound && video.muted) {
+        video.muted = false;
+        if (!video.paused) video.play().catch(() => { video.muted = true; syncBtn(); });
+        syncBtn();
+      }
+    };
+    unlockEvents.forEach((ev) => window.addEventListener(ev, unlock, true));
+    soundBtn.addEventListener('click', () => {
+      wantSound = !(wantSound && !video.muted);
+      video.muted = !wantSound;
+      if (wantSound) video.volume = 0.75;
+      syncBtn();
+    });
     new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { video.preload = 'auto'; video.play().catch(() => {}); }
+      if (entry.isIntersecting) { video.preload = 'auto'; playVideo(); }
       else video.pause();
     }, { threshold: 0.15 }).observe(reel.querySelector('.reel__sticky'));
   }
+})();
+
+/* ---------- Galeria de sabores: autoplay + arrastre con mouse/dedo ---------- */
+(() => {
+  const gallery = document.querySelector('[data-gallery]');
+  if (!gallery) return;
+  const track = gallery.querySelector('.gallery__track');
+  const slides = [...track.querySelectorAll('.slide')];
+  const dotsBox = gallery.querySelector('.gallery__dots');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let index = 0, timer = null, paused = false;
+
+  const mark = (i) => {
+    index = i;
+    slides.forEach((s, k) => s.classList.toggle('is-active', k === i));
+    dots.forEach((d, k) => d.setAttribute('aria-current', String(k === i)));
+    const flavor = slides[i].dataset.flavor;
+    document.querySelectorAll('.flavors li').forEach((li) => li.classList.toggle('is-featured', li.dataset.flavor === flavor));
+  };
+  const go = (i) => {
+    i = (i + slides.length) % slides.length;
+    track.scrollTo({ left: i * track.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
+    mark(i);
+  };
+  const restart = () => {
+    clearInterval(timer);
+    if (!reduce) timer = setInterval(() => { if (!paused && !document.hidden) go(index + 1); }, 3800);
+  };
+
+  const dots = slides.map((s, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', s.querySelector('figcaption').textContent);
+    b.addEventListener('click', () => { go(i); restart(); });
+    dotsBox.appendChild(b);
+    return b;
+  });
+
+  // El slide visible manda (cubre el swipe nativo con el dedo)
+  let st;
+  track.addEventListener('scroll', () => {
+    if (track.classList.contains('is-dragging')) return;
+    clearTimeout(st);
+    st = setTimeout(() => {
+      const i = Math.round(track.scrollLeft / track.clientWidth);
+      if (i !== index && slides[i]) { mark(i); restart(); }
+    }, 120);
+  }, { passive: true });
+
+  // Arrastre con mouse
+  let down = false, startX = 0, startLeft = 0;
+  track.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    down = true; startX = e.clientX; startLeft = track.scrollLeft;
+    track.classList.add('is-dragging'); track.setPointerCapture(e.pointerId);
+  });
+  track.addEventListener('pointermove', (e) => { if (down) track.scrollLeft = startLeft - (e.clientX - startX); });
+  const end = (e) => {
+    if (!down) return;
+    down = false; track.classList.remove('is-dragging');
+    const dx = e.clientX - startX;
+    const from = Math.round(startLeft / track.clientWidth);
+    go(Math.abs(dx) > track.clientWidth * 0.12 ? from + (dx < 0 ? 1 : -1) : from);
+    restart();
+  };
+  track.addEventListener('pointerup', end);
+  track.addEventListener('pointercancel', end);
+
+  track.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { go(index + 1); restart(); }
+    if (e.key === 'ArrowLeft') { go(index - 1); restart(); }
+  });
+  gallery.addEventListener('mouseenter', () => { paused = true; });
+  gallery.addEventListener('mouseleave', () => { paused = false; });
+  window.addEventListener('resize', () => { track.scrollLeft = index * track.clientWidth; });
+
+  mark(0);
+  restart();
 })();

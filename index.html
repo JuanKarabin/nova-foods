@@ -69,10 +69,14 @@
     <section class="reel" data-reel aria-label="Video de la planta NOVA FOODS">
       <div class="reel__sticky">
         <div class="reel__frame">
-          <video class="reel__video" muted loop playsinline preload="auto" aria-label="Recorrido por la planta de producción">
+          <video class="reel__video" loop playsinline preload="auto" aria-label="Recorrido por la planta de producción">
             <source src="assets/NOVA.mp4" type="video/mp4">
           </video>
           <div class="reel__shade" aria-hidden="true"></div>
+          <button class="reel__sound glass" type="button" data-sound aria-pressed="true" aria-label="Desactivar sonido">
+            <svg class="i-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+            <svg class="i-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 5 6m0-6-5 6"/></svg>
+          </button>
           <div class="reel__caption">
             <span class="reel__kicker">Planta Quilmes · Buenos Aires</span>
             <p class="reel__line">Acá se fabrica tu producto.</p>
@@ -138,13 +142,16 @@
         </div>
 
         <div class="catalog">
-          <figure class="catalog__media" data-reveal="left">
-            <img src="assets/empanada.jpg" alt="Empanadas NOVA FOODS" loading="lazy">
-            <figcaption class="chip glass">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4zM4 7l2-3h12l2 3M9 11h6"/></svg>
-              <span><strong>Tu marca</strong> en cada envase</span>
-            </figcaption>
-          </figure>
+          <div class="catalog__media gallery" data-reveal="left" data-gallery aria-roledescription="carrusel" aria-label="Sabores de empanadas">
+            <div class="gallery__track" tabindex="0">
+              <figure class="slide" data-flavor="caprese"><img src="assets/Capresse.jpg" alt="Empanada de Caprese Integral" loading="lazy" draggable="false"><figcaption class="chip glass slide__name">Caprese Integral</figcaption></figure>
+              <figure class="slide" data-flavor="jyq"><img src="assets/JyQ.jpg" alt="Empanada de Jamón y queso" loading="lazy" draggable="false"><figcaption class="chip glass slide__name">Jamón y queso</figcaption></figure>
+              <figure class="slide" data-flavor="osobuco"><img src="assets/Osobuco.jpg" alt="Empanada de Osobuco" loading="lazy" draggable="false"><figcaption class="chip glass slide__name">Osobuco</figcaption></figure>
+              <figure class="slide" data-flavor="vacio"><img src="assets/Vacio-provoleta.jpg" alt="Empanada de Vacío y provoleta" loading="lazy" draggable="false"><figcaption class="chip glass slide__name">Vacío y provoleta</figcaption></figure>
+              <figure class="slide" data-flavor="zapallo"><img src="assets/Zapallo.jpg" alt="Empanada de Zapallo Integral" loading="lazy" draggable="false"><figcaption class="chip glass slide__name">Zapallo Integral</figcaption></figure>
+            </div>
+            <div class="gallery__dots" aria-label="Elegir sabor"></div>
+          </div>
           <ol class="catalog__list glass" data-reveal="right" data-glow>
             <li class="product product--flavors">
               <h3 class="display">Empanadas</h3>
@@ -152,7 +159,7 @@
               <ul class="flavors">
                 <li>Carne Suave</li>
                 <li>Pollo</li>
-                <li>Jamón y queso</li>
+                <li data-flavor="jyq">Jamón y queso</li>
                 <li>Cebolla y queso</li>
                 <li>Humita</li>
                 <li>Carne Picante</li>
@@ -160,8 +167,8 @@
                 <li>Bondiola</li>
                 <li>Pollo BBQ</li>
                 <li>Roquefort con jamón</li>
-                <li>Caprese Integral</li>
-                <li>Zapallo Integral</li>
+                <li data-flavor="caprese">Caprese Integral</li>
+                <li data-flavor="zapallo">Zapallo Integral</li>
                 <li>Pollo y hongos</li>
                 <li>Cheeseburger</li>
                 <li>Cuatro Quesos</li>
@@ -169,8 +176,8 @@
                 <li>Matambrito a la Pizza</li>
                 <li>Carne Suave Soufflé</li>
                 <li>Carne Cuchillo</li>
-                <li>Osobuco</li>
-                <li>Vacío y provoleta (Soufflé)</li>
+                <li data-flavor="osobuco">Osobuco</li>
+                <li data-flavor="vacio">Vacío y provoleta (Soufflé)</li>
                 <li>Tofu y Mostaza Vegana</li>
                 <li>Carne Vegetal Vegana</li>
               </ul>
